@@ -78,7 +78,7 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE" localhost:3001/subscripti
   curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE" localhost:3001/subscriptions/1 -X GET
   ```
 ## Remarks about the projects
-1. There are 3 services running, 1 postgres database and a rabbitmq server.
+1. There are 3 services running, 1 postgres database and a rabbitmq server. The main idea behind this service is that we can subscribers with subcriptions to different campaigns. This means that a susbcriber can have multiple subscriptions. A subscriber can choose to opt out of a particular subscription (or all, however I didn't implement this). This was the reason behing separating the subscriber, subscriptions and campaigns.
 2. Regarding security
 The security is very basic and simple by using a jwt token once the user is logged in. With more time, I could have implemented better security, including Authorization between the services. I tried to simulate an Authorization service, but i'm using the subscriber table information to do a simple check if the email exists. The password is not being used, any password would work for this case. Ideally, this should have proper validation, including password salt and hashing to store it in the database or use an external service to handle that. We could also use other strategies for auth.
 3. Regarding testing I ran out of time for the testing. Was only able to write 2 unit tests for the subscription service. My approach to unit test is checking the function im testing and following through the different escenarios in the code, checking who was called and who was not, expected results and errors that were thrown.

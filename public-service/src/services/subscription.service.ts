@@ -65,7 +65,7 @@ export class SubscriptionService {
 
   async getSubscription(id: string, token: string) {
     const url = this.configService.get<string>('SUBSCRIPTION_SERVICE_BASE_URL');
-    console.log('subscriptionServiceBaseUrl', `${url}/subscriptions/${id}`);
+
     const { data } = await firstValueFrom(
       this.httpService
         .get(`${url}/subscriptions/${id}`, {

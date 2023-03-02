@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Subscriber } from '../models/subscriber.entity';
-import { Subscription } from '../models/subscription.entity';
 
 @Injectable()
 export class SubscriberRepository {
   constructor(
-    @InjectRepository(Subscription)
+    @InjectRepository(Subscriber)
     private dataSource: DataSource,
   ) {}
 
@@ -16,6 +15,7 @@ export class SubscriberRepository {
       .createQueryBuilder()
       .select('subscriber')
       .from(Subscriber, 'subscriber')
+      .leftJoinAndSelect('subscriber.subscription', 'subscriptions')
       .where('subscriber.email = :email', { email })
       .getOne();
   }

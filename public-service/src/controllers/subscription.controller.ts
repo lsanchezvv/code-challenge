@@ -36,7 +36,6 @@ export class SubscriptionController {
     @Param('id') id: string,
     @Headers('authorization') authorization: string,
   ) {
-    console.log('sub controller')
     return this.subscriptionService.getSubscription(id, authorization);
   }
 

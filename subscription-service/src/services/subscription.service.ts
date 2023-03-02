@@ -65,6 +65,7 @@ export class SubscriptionsService {
       subscriber.email = createSubscriptionDto.email;
       subscriber.dateOfBirth = createSubscriptionDto.dateOfBirth;
       subscriber.gender = createSubscriptionDto.gender;
+      subscriber.subscription = [];
     }
 
     const subscriptionExists =
@@ -81,7 +82,7 @@ export class SubscriptionsService {
       const subscription = new Subscription();
       subscription.campaign = campaign;
       subscription.optIn = true;
-      subscriber.subscription = [subscription];
+      subscriber.subscription = [...subscriber.subscription, subscription];
       await this.subscriptionRepo.createSubscriptionWithSubscriber(
         subscriber,
         subscription,
