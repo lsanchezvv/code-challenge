@@ -63,8 +63,9 @@ curl -X POST localhost:3001/subscriptions \
   curl -X POST http://localhost:3001/auth/login -d '{"username": "adidas@test.com", "password": "password"}' -H "Content-Type: application/json"
   ```
 4. use the access token to make the get request again and you should get a list of subscriptions. Note: you will only get subscriptions tied to the authenticated user. An authenticated user cannot access subscriptions belonging to another account (tied by the email). See security remarks about this.
+```
 curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE" localhost:3001/subscriptions -X GET
-
+```
 5. try to get the subscription details using the same access token. you should get the subscription details. 
   ```
   curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE" localhost:3001/subscriptions/1 -X GET
