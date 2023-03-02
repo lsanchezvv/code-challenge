@@ -1,0 +1,28 @@
+version: "3.6"
+services:
+  database:
+    image: postgres:9.6-alpine
+    container_name: database
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=subscription
+      - DB_HOST=database
+    networks:
+      - adidas-network
+
+  rabbitmq-broker:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-broker
+    ports:
+      - 5672:5672
+      - 15672:15672
+    # environment:
+    networks:
+      - adidas-network
+
+networks:
+  adidas-network:
+    driver: bridge

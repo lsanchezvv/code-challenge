@@ -1,0 +1,170 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: "Subscription service"
+  description: Adidas backend suscription-service for managing email subscriptions
+  license:
+    name: MIT
+host: api.adidas.com
+basePath: /
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /subscriptions:
+    x-summary: Subscriptions Collection
+    get:
+      summary: List subscriptions by email
+      parameters:
+      - in: query
+        name: email
+        description: Email address to retrieve associated subcriptions
+        required: true
+        type: string
+      responses:
+        200:
+          description: Successful Response
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                subscription_id:
+                  type: string
+                  format: uuid
+                campaign_id:
+                  type: string
+                  format: uuid
+          examples:
+            application/json:
+              - subscription_id: "08966edb-86ac-4e9f-a498-544b8c6bb988"
+                campaign_id: "9c882558-b531-11ed-afa1-0242ac120002"
+              - subscription_id: "08966edb-86ac-4e9f-a498-544b8c6bb982"
+                campaign_id: "9c882558-b531-11ed-afa1-0242ac120003"
+        400:
+          description: Bad request
+        404:
+          description: Email not found
+    post:
+      description: >-
+        Subscribe to newsletter.
+      summary: Create a new subscription
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SubscriptionRequest'
+      responses:
+        201:
+          description: 'Subscription created'
+          schema:
+            type: object
+            properties:
+              subscription_id:
+                type: string
+          examples:
+            application/json:
+              subscription_id: "08966edb-86ac-4e9f-a498-544b8c6bb988"
+        400:
+          description: Bad request
+        409:
+          description: Conflict. Subscription already exists.
+  /subscriptions/{subscription_id}:
+    x-summary: Subscription details
+    get:
+      summary: Returns details for a given subscription id
+      parameters:
+      - in: path
+        name: subscription_id
+        description: subscription id
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Subscription'
+          examples:
+            application/json:
+              subscription_id: '08966edb-86ac-4e9f-a498-544b8c6bb988'
+              campaign_id: "9c882558-b531-11ed-afa1-0242ac120002"
+              campaign_name: "Sales"
+              opt_in: true
+              email: luis@adidas.com
+        400:
+          description: Bad request
+        404: 
+          description: Subscription not found
+  /subscriptions/{subscription_id}/cancel:
+    x-summary: Cancel a subscription
+    patch:
+      summary: Opts out of subscription
+      parameters:
+      - in: path 
+        name: subscription_id
+        description: ID of the subscription to cancel
+        required: true
+        type: string      
+      responses:
+        204:
+          description: Subscription cancelled successfully
+        400:
+          description: Bad request
+        404:
+          description: Subscription not found
+
+definitions:
+  Subscription:
+    title: Subscription details
+    type: object
+    properties:
+      subscription_id:
+        type: string
+      campaign_id:
+        type: string
+      campaign_name:
+        type: string
+      opt_in:
+        type: boolean
+      email:
+        type: string
+      
+  SubscriptionRequest:
+    title: Subscription Request
+    type: object
+    properties:
+      email:
+        type: string
+      date_of_birth:
+        type: string
+        format: date
+      opt_in:
+        type: boolean
+      campaign_id:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+        enum:
+          - Male
+          - Female
+          - Other/Non-binary
+          - Prefer not to disclose
+    required:
+      - email
+      - date_of_birth
+      - opt_in
+      - campaign_id
+    example:
+      email: luis@adidas.com
+      date_of_birth: "2023-03-01"
+      opt_in: true
+      campaign_id: "9c882558-b531-11ed-afa1-0242ac120002"
+      first_name: Luis
+      gender: Male
