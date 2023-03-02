@@ -87,4 +87,5 @@ The security is very basic and simple by using a jwt token once the user is logg
 6. The email service is just listening to the created queue, no email implementation was done as per the challenge.
 7. Documentation is available for subscription-service by going to: http://localhost:3000/api.
 8. With more time I could have done better validation on the endpoints and checking for different types of parameters that are being received.
+9. Regarding database, the database changes are being synced automatically using typeorm, in a real world we should be using migrations to keep track of the changes and have an easier rollback mechanism.
 9. Regarding branch and commits, Very few commits will be shown since everytime I created a new project using nest, it created it's own git and didn't realize that until the last minute. Ideally, while working on a feature, we should work on a feature branch and commit every unit of work.
