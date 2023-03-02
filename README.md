@@ -62,7 +62,7 @@ curl -X POST localhost:3001/subscriptions \
   ```
   curl -X POST http://localhost:3001/auth/login -d '{"username": "adidas@test.com", "password": "password"}' -H "Content-Type: application/json"
   ```
-4. use the access token to make the get request again and you should get a list of subscriptions
+4. use the access token to make the get request again and you should get a list of subscriptions. Note: you will only get subscriptions tied to the authenticated user. An authenticated user cannot access subscriptions belonging to another account (tied by the email). See security remarks about this.
 curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE" localhost:3001/subscriptions -X GET
 
 5. try to get the subscription details using the same access token. you should get the subscription details. 
@@ -80,7 +80,7 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN_HERE" localhost:3001/subscripti
 ## Remarks about the projects
 1. There are 3 services running, 1 postgres database and a rabbitmq server. The main idea behind this service is that we can subscribers with subcriptions to different campaigns. This means that a susbcriber can have multiple subscriptions. A subscriber can choose to opt out of a particular subscription (or all, however I didn't implement this). This was the reason behing separating the subscriber, subscriptions and campaigns.
 2. Regarding security
-The security is very basic and simple by using a jwt token once the user is logged in. With more time, I could have implemented better security, including Authorization between the services. I tried to simulate an Authorization service, but i'm using the subscriber table information to do a simple check if the email exists. The password is not being used, any password would work for this case. Ideally, this should have proper validation, including password salt and hashing to store it in the database or use an external service to handle that. We could also use other strategies for auth.
+The security is very basic and simple by using a jwt token once the user is logged in. With more time, I could have implemented better security, including Authorization between the services. I tried to simulate an Authorization service, but i'm using the subscriber table information to do a simple check if the email exists. The password is not being used, any password would work for this case. Ideally, this should have proper validation, including password salt and hashing to store it in the database or use an external service to handle that. We could also use other strategies for auth. One note is that the logged in user can only query or cancel subscriptions under his account. This is done by decoding the jwt and getting the email. We only return subscriptions records for the given authenticated user.
 3. Regarding testing I ran out of time for the testing. Was only able to write 2 unit tests for the subscription service. My approach to unit test is checking the function im testing and following through the different escenarios in the code, checking who was called and who was not, expected results and errors that were thrown.
 4. Logging, I could have done a better use of logging for debugging purposes and tracking down the flow of order subsription. Always having in mind to not log sensitive data.
 5. Broker service, regarding the broker service it does not have any security around it, with more time I could have added better security like implementing api key and authorization to it. Also add credentials and not use the defaults as for this case. 
