@@ -1,0 +1,82 @@
+version: "3.6"
+services:
+  database:
+    image: postgres:9.6-alpine
+    container_name: database
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=subscription
+      - DB_HOST=database
+      - AUTH_SECRET_KEY=super_secret
+      - JWT_TOKEN_EXPIRATION_IN_SECONDS=3600s
+    networks:
+      - adidas-network
+
+  rabbitmq-broker:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-broker
+    ports:
+      - 5672:5672
+      - 15672:15672
+    # environment:
+    networks:
+      - adidas-network
+
+  email-service:
+    build: ./email-service/
+    image: email-service
+    container_name: email-service
+    environment:
+     - NOTIFICATIONS_QUEUE_HOST=rabbitmq-broker
+     - NOTIFICATIONS_QUEUE_PORT=5672
+     - NOTIFICATIONS_QUEUE_NAME=notification_queue
+    depends_on:
+      - rabbitmq-broker
+    networks:
+      - adidas-network
+
+  subscription-service:
+    build: ./subscription-service/
+    image: subscription-service
+    container_name: subscription-service
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_NAME=subscription
+      - DB_SYNC=true
+      - NOTIFICATIONS_QUEUE_HOST=rabbitmq-broker
+      - NOTIFICATIONS_QUEUE_PORT=5672
+      - NOTIFICATIONS_QUEUE_NAME=notification_queue
+      - AUTH_SECRET_KEY=super_secret
+      - JWT_TOKEN_EXPIRATION_IN_SECONDS=3600s
+    depends_on:
+      - rabbitmq-broker
+      - database
+    networks:
+      - adidas-network
+
+  public-service:
+    build: ./public-service/
+    image: public-service
+    container_name: public-service
+    ports:
+      - 3001:3001
+    environment:
+      - NODE_ENV=production
+      - SUBSCRIPTION_SERVICE_BASE_URL=http://subscription-service:3000
+      - AUTH_SERVICE_BASE_URL=http://subscription-service:3000 # pretending they are different
+      - APP_PORT=3001
+    networks:
+      - adidas-network
+
+networks:
+  adidas-network:
+    driver: bridge
